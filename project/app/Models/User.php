@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Apartment;
+use App\Models\Booking;
 
 class User extends Authenticatable
 {
@@ -45,5 +46,10 @@ class User extends Authenticatable
     public function apartments()
     {
         return $this->hasMany(Apartment::class);
+    }
+    
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
     }
 }
