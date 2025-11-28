@@ -9,31 +9,58 @@ class ApartmentController extends Controller
     // index
     public function index()
     {
-        // Code to list all apartments
+      $apartments = Apartment::with(['city', 'images'])->get()->paginate(15);
+      return ApartmentResource::collection($apartments);
     }
     // show
-    public function show($id)
+    public function show(Apartment $apartment)
     {
-        // Code to show a specific apartment
-    }
-    // create
-    public function create(){
-        // Code to show form to create a new apartment
+      // Eager load related data as before (City and Images)
+      $apartment->load(['city', 'images']);
+      return new ApartmentResource($apartment);
     }
     // store
     public function store(Request $request){
-        // Code to store a new apartment
-    }
-    // edit
-    public function edit($id){
-        // Code to show form to edit an apartment
-    }
-    // update
-    public function update(Request $request, $id){
-        // Code to update an apartment
+        $validated = $request->validate([
+          'owner_id' => 'required|exists:users,id',
+          'city_id' => 'required|exists:cities,id',
+          'title' => 'required|string|max:255',
+          'description' => 'required|string',
+          'price_per_month' => 'required|numeric',
+          'rooms' => 'required|integer',
+        ]);
+        
+        $validated['ownerID'] = auth()->id();
+        $apartment = Apartment::create($validated);
+        return new ApartmentResource($apartment);
+        
+      }
+      // update
+      public function update(Request $request, $id){
+        $validated = $request->validate([
+        'owner_id' => 'required|exists:users,id',
+        'city_id' => 'sometimes|exists:cities,id',
+        'title' => 'sometimes|string|max:255',
+        'description' => 'sometimes|string',
+        'price_per_month' => 'sometimes|numeric',
+        'rooms' => 'sometimes|integer',
+      ]);
+
+      $apartment->update($validated);
+      return new ApartmentResource($apartment);
     }
     // destroy
     public function destroy($id){
-        // Code to delete an apartment
+
+      if(auth()->id() !== $apartment->ownerID){
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthorized. You do not own this apartment.'
+        ], 403);
+      }
+
+      $apartment->delete();
+      return response()->noContent();
+
     }
 }
