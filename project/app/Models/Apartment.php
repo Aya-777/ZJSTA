@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Booking;
 use App\Models\ApartmentImage;
+use App\Models\City;
 
 class Apartment extends Model
 {
@@ -27,6 +28,10 @@ class Apartment extends Model
     public function images()
     {
         return $this->hasMany(ApartmentImage::class);
+    }
+    public function city()
+    {
+        return $this->belongsTo(City::class);
     }
 
 }
