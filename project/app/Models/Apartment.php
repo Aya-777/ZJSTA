@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Booking;
+use App\Models\ApartmentImage;
 
 class Apartment extends Model
 {
@@ -22,6 +23,10 @@ class Apartment extends Model
     public function bookings()
     {
         return $this->hasMany(Booking::class);
+    }
+    public function images()
+    {
+        return $this->hasMany(ApartmentImage::class);
     }
 
 }
