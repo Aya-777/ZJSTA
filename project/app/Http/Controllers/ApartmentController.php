@@ -53,9 +53,15 @@ class ApartmentController extends Controller
 
     // destroy
     public function destroy(Apartment $apartment){
-      
+
       $apartment->delete();
       return response()->noContent();
 
+    }
+
+    //search
+    public function search($name){
+      $apartments = Apartment::where('title', 'like', '%' . $name . '%')->with(['city', 'images'])->get();
+      return ApartmentResource::collection($apartments);
     }
 }

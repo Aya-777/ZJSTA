@@ -9,4 +9,4 @@ Route::get('/apartments/{apartment}', [ApartmentController::class, 'show']);
 Route::post('/apartments', [ApartmentController::class, 'store']);
 Route::put('/apartments/{apartment}', [ApartmentController::class, 'update']);
 Route::delete('/apartments/{apartment}', [ApartmentController::class, 'destroy']);
-
+Route::get('/apartments/search/{name}',[ApartmentController::class,'search']);
