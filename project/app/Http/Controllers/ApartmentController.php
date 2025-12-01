@@ -31,22 +31,29 @@ class ApartmentController extends Controller
           'numberOfRooms' => 'required|integer',
         ]);
         
-        // $validated['user_id'] = auth()->id();
+        $validated['user_id'] = auth()->id();
         $apartment = Apartment::create($validated);
         return new ApartmentResource($apartment);
         
       }
 
       // update
-      public function update(Request $request){
+      public function update(Request $request , Apartment $apartment){
         $validated = $request->validate([
-        'user_id' => 'required|exists:users,id',
+        'user_id' => 'sometimes|exists:users,id',
         'city_id' => 'sometimes|exists:cities,id',
         'title' => 'sometimes|string|max:255',
         'description' => 'sometimes|string',
         'pricePerMonth' => 'sometimes|numeric',
         'numberOfRooms' => 'sometimes|integer',
       ]);
+
+      if(auth()->id() !== $apartment->owner_id){
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthorized. You do not own this apartment.'
+        ], 403);
+      }
 
       $apartment->update($validated);
       return new ApartmentResource($apartment);
