@@ -31,7 +31,6 @@ class ApartmentController extends Controller
           'numberOfRooms' => 'required|integer',
         ]);
         
-        $validated['user_id'] = auth()->id();
         $apartment = Apartment::create($validated);
         return new ApartmentResource($apartment);
         
@@ -47,13 +46,6 @@ class ApartmentController extends Controller
         'pricePerMonth' => 'sometimes|numeric',
         'numberOfRooms' => 'sometimes|integer',
       ]);
-
-      if(auth()->id() !== $apartment->owner_id){
-        return response()->json([
-            'success' => false,
-            'message' => 'Unauthorized. You do not own this apartment.'
-        ], 403);
-      }
 
       $apartment->update($validated);
       return new ApartmentResource($apartment);
