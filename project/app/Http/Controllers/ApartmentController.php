@@ -53,13 +53,7 @@ class ApartmentController extends Controller
 
     // destroy
     public function destroy(Apartment $apartment){
-      if(auth()->id() !== $apartment->owner_id){
-        return response()->json([
-            'success' => false,
-            'message' => 'Unauthorized. You do not own this apartment.'
-        ], 403);
-      }
-
+      
       $apartment->delete();
       return response()->noContent();
 
