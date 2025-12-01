@@ -5,7 +5,8 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\City;
-use App\Http\Resources\ImageResource;
+use App\Models\ApartmentImage;
+// use App\Http\Resources\ImageResource;
 
 class ApartmentResource extends JsonResource
 {
@@ -23,7 +24,8 @@ class ApartmentResource extends JsonResource
         'price_per_month' => number_format($this->pricePerMonth, 2),
         'number_of_rooms' => $this->numberOfRooms,
         'city' => City::find($this->city_id),
-        'images' => ImageResource::collection($this->whenLoaded('images')),
+        'images' => $this->whenLoaded('images', function () {
+          return ImageResource::collection($this->images);}),
         'owner_id' => $this->user_id,
       ];
     }
