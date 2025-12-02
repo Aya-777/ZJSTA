@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ApartmentImage;
 use App\Http\Resources\ImageResource;
+use App\Models\Apartment;
 
 class ApartmentImageController extends Controller
 {
@@ -15,12 +16,15 @@ class ApartmentImageController extends Controller
     }
 
     // show
-    public function show($image){
+    public function show(Apartment $apartment, ApartmentImage $image){
+      if($image->apartment_id != $apartment->id){
+          abort(404);
+      }
       return new ImageResource($image);
     }
 
     // create
-    public function store(Request $request, ApartmentImage $image){
+    public function store(Request $request){
       $validated = $request->validate([
         'apartment_id' => 'required|exists:apartments,id',
         'image_url' => 'required|url',
@@ -30,17 +34,20 @@ class ApartmentImageController extends Controller
     }
 
     // update
-    public function update(Request $request, ApartmentImage $image){
+    public function update(Apartment $apartment, ApartmentImage $image, Request $request){
       $validated = $request->validate([
-        'apartment_id' => 'required|exists:apartments,id',
-        'image_url' => 'required|url',
+        'apartment_id' => 'sometimes|exists:apartments,id',
+        'image_url' => 'sometimes|url',
       ]);
       $image->update($validated);
       return new ImageResource($image);
     }
     
     // destroy
-    public function destroy(ApartmentImage $image){
+    public function destroy(Apartment $apartment, ApartmentImage $image){
+        if($image->apartment_id != $apartment->id){
+            abort(404);
+        }
         $image->delete();
         return response()->noContent();
     }

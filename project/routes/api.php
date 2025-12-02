@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApartmentController;
+use App\Http\Controllers\ApartmentImageController;
 
 // Apartment Routes
 Route::get('/apartments', [ApartmentController::class, 'index']);
@@ -12,7 +13,6 @@ Route::put('/apartments/{apartment}', [ApartmentController::class, 'update']);
 Route::delete('/apartments/{apartment}', [ApartmentController::class, 'destroy']);
 Route::get('/apartments/search/{name}',[ApartmentController::class,'search']);
 
-// still needs testing
 // Apartment Images Routes
 Route::get('/apartments/{apartment}/images', [ApartmentImageController::class, 'index']);
 Route::get('/apartments/{apartment}/images/{image}', [ApartmentImageController::class, 'show']);
