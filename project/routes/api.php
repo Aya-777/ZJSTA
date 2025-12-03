@@ -19,3 +19,11 @@ Route::get('/apartments/{apartment}/images/{image}', [ApartmentImageController::
 Route::post('/apartments/{apartment}/images', [ApartmentImageController::class, 'store']);
 Route::put('/apartments/{apartment}/images/{image}', [ApartmentImageController::class, 'update']);
 Route::delete('/apartments/{apartment}/images/{image}', [ApartmentImageController::class, 'destroy']);
+
+// Booking Routes
+use App\Http\Controllers\BookingController;
+Route::get('/bookings', [BookingController::class, 'index']);
+Route::get('/bookings/{booking}', [BookingController::class, 'show']);
+Route::post('/bookings', [BookingController::class, 'store']);
+Route::put('/bookings/{booking}', [BookingController::class, 'update']);
+Route::delete('/bookings/{booking}', [BookingController::class, 'destroy']);

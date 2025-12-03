@@ -10,8 +10,8 @@ use App\Models\Apartment;
 class ApartmentImageController extends Controller
 {
     // index
-    public function index(){
-        $images = ApartmentImage::all();
+    public function index(Apartment $apartment){
+        $images = $apartment->images;
         return ImageResource::collection($images);
     }
 

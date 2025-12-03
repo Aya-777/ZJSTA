@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('apartment_id')->constrained()->onDelete('cascade');
             $table->date('start_date');
             $table->date('end_date');
-            $table->boolean('status')->default(false);
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }
