@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApartmentController;
 use App\Http\Controllers\ApartmentImageController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\CityController;
 
 // Apartment Routes
 Route::get('/apartments', [ApartmentController::class, 'index']);
@@ -27,3 +28,6 @@ Route::get('/bookings/{booking}', [BookingController::class, 'show']);
 Route::post('/bookings', [BookingController::class, 'store']);
 Route::put('/bookings/{booking}', [BookingController::class, 'update']);
 Route::delete('/bookings/{booking}', [BookingController::class, 'destroy']);
+
+// City Routes
+Route::apiResource('cities', CityController::class)->only(['index', 'show']);
