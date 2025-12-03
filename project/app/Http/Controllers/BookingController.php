@@ -34,6 +34,20 @@ class BookingController extends Controller
           'status' => 'sometimes|string',
         ]);
         
+        $apartment = Apartment::find($validated['apartment_id']);
+        $apartmentBookings = $apartment->bookings()
+          ->where(function($query) use ($validated) {
+              $query->whereBetween('start_date', [$validated['start_date'], $validated['end_date']])
+                    ->orWhereBetween('end_date', [$validated['start_date'], $validated['end_date']])
+                    ->orWhere(function($query) use ($validated) {
+                        $query->where('start_date', '<=', $validated['start_date'])
+                              ->where('end_date', '>=', $validated['end_date']);
+                    });
+          })->exists();
+        if($apartmentBookings){
+            return response()->json(['message' => 'The apartment is already booked for the selected dates.'], 409);
+        } 
+        
         $booking = Booking::create($validated);
         return new BookingResource($booking);
     }
