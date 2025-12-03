@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApartmentController;
 use App\Http\Controllers\ApartmentImageController;
+use App\Http\Controllers\BookingController;
 
 // Apartment Routes
 Route::get('/apartments', [ApartmentController::class, 'index']);
@@ -21,7 +22,6 @@ Route::put('/apartments/{apartment}/images/{image}', [ApartmentImageController::
 Route::delete('/apartments/{apartment}/images/{image}', [ApartmentImageController::class, 'destroy']);
 
 // Booking Routes
-use App\Http\Controllers\BookingController;
 Route::get('/bookings', [BookingController::class, 'index']);
 Route::get('/bookings/{booking}', [BookingController::class, 'show']);
 Route::post('/bookings', [BookingController::class, 'store']);

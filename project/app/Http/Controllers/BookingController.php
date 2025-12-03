@@ -11,13 +11,15 @@ use App\Http\Resources\BookingResource;
 class BookingController extends Controller
 {
   // index
-    public function index(User $user){
+    public function index(){
+      $user = User::find(1); // Temporarily hardcoded for testing use auth()->user();
       $bookings = $user->bookings;
       return BookingResource::collection($bookings);
     }
     // show
-    public function show(Apartment $apartment, Booking $booking){
-      if($booking->apartment_id != $apartment->id){
+    public function show(Booking $booking){
+      $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
+      if($user->id !== $booking->user_id){
           abort(404);
       }
       return new BookingResource($booking);
@@ -36,7 +38,7 @@ class BookingController extends Controller
         return new BookingResource($booking);
     }
     // update
-    public function update(Apartment $apartment, Booking $booking, Request $request){
+    public function update(Booking $booking, Request $request){
       $validated = $request->validate([
         'user_id' => 'sometimes|exists:users,id',
         'apartment_id' => 'sometimes|exists:apartments,id',
@@ -48,8 +50,9 @@ class BookingController extends Controller
       return new BookingResource($booking);
     }
     // destroy
-    public function destroy(Apartment $apartment, Booking $booking){
-        if($booking->apartment_id != $apartment->id){
+    public function destroy(Booking $booking){
+        $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
+        if($user->id !== $booking->user_id){
             abort(404);
         }
         $booking->delete();
