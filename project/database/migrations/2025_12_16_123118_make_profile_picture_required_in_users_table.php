@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-      $defaultAvatarPath = 'avatars/default_avatar.png';
+      $defaultAvatarPath = 'profile_pictures/default_avatar.jpg';
       Schema::table('users', function (Blueprint $table) use ($defaultAvatarPath) {
             $table->string('profile_picture')->default($defaultAvatarPath)->change();
         });
