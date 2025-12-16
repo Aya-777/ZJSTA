@@ -6,20 +6,29 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens; 
 use App\Models\Apartment;
 use App\Models\Booking;
+
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable , HasApiTokens;
 
+    
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
-    protected $guarded = [];
+    protected $fillable=[
+        'first_name','last_name',
+        'email','phone_number',
+        'birth_date','password',
+        'profile_picture','identity_image',
+        'role',
+    ];
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -40,6 +49,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'birth_date'=>'date',
+            'is_active'=>'boolean',
         ];
     }
 
