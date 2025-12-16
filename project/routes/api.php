@@ -6,6 +6,7 @@ use App\Http\Controllers\ApartmentController;
 use App\Http\Controllers\ApartmentImageController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CityController;
+use App\Http\Controllers\PhotoController;
 
 // Apartment Routes
 Route::get('/apartments', [ApartmentController::class, 'index']);
@@ -31,3 +32,6 @@ Route::delete('/bookings/{booking}', [BookingController::class, 'destroy']);
 
 // City Routes
 Route::apiResource('cities', CityController::class)->only(['index', 'show']);
+
+// upload image
+Route::post('/apartments/{apartment}/photos', [PhotoController::class, 'upload']);
