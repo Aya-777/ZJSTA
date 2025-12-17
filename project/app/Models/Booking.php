@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Apartment;
 use App\Models\User;
 use App\Models\Payement;
+use App\Models\Review;
 
 class Booking extends Model
 {
@@ -26,5 +27,9 @@ class Booking extends Model
     public function payement()
     {
         return $this->hasMany(Payement::class);
+    }
+    public function review()
+    {
+      return $this->hasOne(Review::class);
     }
 }

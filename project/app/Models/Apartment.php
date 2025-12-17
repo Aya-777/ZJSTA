@@ -16,11 +16,11 @@ class Apartment extends Model
 
     protected $guarded = [];
 
+    // Relationships
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
     public function bookings()
     {
         return $this->hasMany(Booking::class);
@@ -33,6 +33,10 @@ class Apartment extends Model
     {
         return $this->belongsTo(City::class);
     }
+    public function reviews(){
+      return $this->hasMany(Review::class);
+    }
+    // To get the average rating: $apartment->reviews()->avg('rating');
 
     // Filters
       public function scopeCity($query, $city){
