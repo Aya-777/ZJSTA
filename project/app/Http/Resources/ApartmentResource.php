@@ -26,6 +26,9 @@ class ApartmentResource extends JsonResource
         'city' => City::find($this->city_id),
         'images' => $this->whenLoaded('images'),
         'owner_id' => $this->user_id,
+        'furnished' => $this->furnished,
+        'rentalType' => $this->rentalType,
+        'area' => $this->area,
       ];
     }
 }

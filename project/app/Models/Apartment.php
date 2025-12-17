@@ -34,4 +34,37 @@ class Apartment extends Model
         return $this->belongsTo(City::class);
     }
 
+    // Filters
+      public function scopeCity($query, $city){
+        return $query->where('city',$city);
+      }
+
+      public function scopeRooms($query, $rooms){
+        return $query->where('rooms', $rooms);
+      }
+
+      public function scopeMinRooms($query, $rooms){
+        return $query->where('rooms', '>=' , $rooms);
+      }
+
+      public function scopeMaxPrice($query, $price){
+        return $query->where('pricePerMonth', '<=', $price);
+      }
+
+      public function scopeMinPrice($query, $price){
+        return $query->where('pricePerMonth', '>=', $price);
+      }
+
+      public function scopeFurnished($query, $furnished){
+        return $query->where('furnished', $furnished);
+      }
+
+      public function scopeRentalType($query, $type){
+        return $query->where('rentalType', $type);
+      }
+
+      public function scopeArea($query, $area){
+        return $query->where('area', '>=', $area);
+      }
+
 }

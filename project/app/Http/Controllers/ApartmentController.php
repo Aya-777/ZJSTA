@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Apartment;
 use App\Http\Resources\ApartmentResource;
+use App\Http\Filters\ApartmentFilter;
 
 class ApartmentController extends Controller
 {
     // index
-    public function index(){
-      $apartments = Apartment::with(['city', 'images'])->paginate(15);
+    public function index(Request $request){
+      $query = Apartment::query();
+      $query = ApartmentFilter::apply($query ,$request);
+      $apartments = $query->with(['city', 'images'])->paginate(15);
       return ApartmentResource::collection($apartments);
     }
 
@@ -29,7 +32,10 @@ class ApartmentController extends Controller
           'description' => 'required|string',
           'pricePerMonth' => 'required|numeric',
           'numberOfRooms' => 'required|integer',
-        ]);
+          'furnished' => 'required|boolean',
+          'rentalType' => 'required|string',
+          'area' => 'required|numeric',
+          ]);
         
         $apartment = Apartment::create($validated);
         return new ApartmentResource($apartment);
@@ -45,6 +51,9 @@ class ApartmentController extends Controller
         'description' => 'sometimes|string',
         'pricePerMonth' => 'sometimes|numeric',
         'numberOfRooms' => 'sometimes|integer',
+          'furnished' => 'sometimes|boolean',
+          'rentalType' => 'sometimes|string',
+          'area' => 'sometimes|numeric',
       ]);
 
       $apartment->update($validated);
