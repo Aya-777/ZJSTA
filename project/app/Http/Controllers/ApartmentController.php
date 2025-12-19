@@ -51,9 +51,9 @@ class ApartmentController extends Controller
         'description' => 'sometimes|string',
         'pricePerMonth' => 'sometimes|numeric',
         'numberOfRooms' => 'sometimes|integer',
-          'furnished' => 'sometimes|boolean',
-          'rentalType' => 'sometimes|string',
-          'area' => 'sometimes|numeric',
+        'furnished' => 'sometimes|boolean',
+        'rentalType' => 'sometimes|string',
+        'area' => 'sometimes|numeric',
       ]);
 
       $apartment->update($validated);

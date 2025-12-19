@@ -16,9 +16,15 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('city_id')->constrained()->onDelete('cascade');
             $table->string('title');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->double('pricePerMonth');
             $table->integer('numberOfRooms'); 
+            $table->integer('numberOfBathRooms');
+            $table->string('property_type');
+            $table->double('area');
+            $table->string('rental_type')->nullable();
+            $table->boolean('is_furnished');
+            $table->float('rating')->default(0);
             $table->timestamps();
         });
     }
