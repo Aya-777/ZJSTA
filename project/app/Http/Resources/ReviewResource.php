@@ -8,7 +8,7 @@ use App\Models\City;
 use App\Models\ApartmentImage;
 // use App\Http\Resources\ImageResource;
 
-class ApartmentResource extends JsonResource
+class ReviewResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,10 +19,11 @@ class ApartmentResource extends JsonResource
     {
       return [
         'id' => $this->id,
-        'user_id' => $this->user_id ,
-        'apartment_id' => $this->apartment_id ,
-        'booking_id' => $this->booking_id ,
-        'rating' => $this->rating ,
+        'rating' => $this->rating,
+        'comment' => $this->comment,
+        'user_name' => $this->user->name, 
+        'apartment_name' => $this->apartment->title,
+        'created_at' => $this->created_at->toDateTimeString()
       ];
     }
 }

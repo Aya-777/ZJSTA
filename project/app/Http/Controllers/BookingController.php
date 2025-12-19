@@ -53,6 +53,10 @@ class BookingController extends Controller
     }
     // update
     public function update(Booking $booking, Request $request){
+      $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
+      if($user->id != $booking->user_id){
+        abort(404);
+      }
       $validated = $request->validate([
         'user_id' => 'sometimes|exists:users,id',
         'apartment_id' => 'sometimes|exists:apartments,id',
@@ -65,7 +69,7 @@ class BookingController extends Controller
     }
     // destroy
     public function destroy(Booking $booking){
-        $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
+      $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
         if($user->id !== $booking->user_id){
             abort(404);
         }

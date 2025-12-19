@@ -11,6 +11,7 @@ use App\Http\Controllers\ApartmentImageController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\ReviewController;
 
 // Apartment Routes
 Route::get('/apartments', [ApartmentController::class, 'index']);
@@ -58,3 +59,10 @@ Route::apiResource('cities', CityController::class)->only(['index', 'show']);
 
 // upload image
 Route::post('/apartments/{apartment}/photos', [PhotoController::class, 'upload']);
+
+// reviews
+Route::post('/reviews', [ReviewController::class, 'store']);
+Route::get('/reviews', [ReviewController::class, 'index']);
+Route::get('/reviews/{review}', [ReviewController::class, 'show']);
+Route::put('/reviews/{review}', [ReviewController::class, 'update']);
+Route::delete('/reviews/{review}', [ReviewController::class, 'delete']);

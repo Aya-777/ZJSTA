@@ -9,6 +9,7 @@ use App\Models\Booking;
 
 class Review extends Model
 {
+    protected $guarded = [];
     public function user(){
       return $this->belongsTo(User::class);
     }
