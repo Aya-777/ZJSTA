@@ -10,37 +10,37 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage; 
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Requests\LoginRequest;
-use App\Traits\FileUploadTrait;
+use App\Http\Controllers\PhotoController;
 
 class AuthController extends Controller
 {
-    use FileUploadTrait;
+    
+    public function register(Request $request,PhotoController $photoController){
 
-    public function register(RegisterUserRequest $request){
-        // $identityImagePath=$request->file('identity_image')->store('identities','public');
-        // $profilePicturePath=null;
-        // if($request->hasFile('profile_picture')){
-        //     $profilePicturePath=$request->file('profile_picture')->store('profiles','public');
-        // }
+        $validatedData = $request->validate(
+            (new RegisterUserRequest())->rules()
+        );
 
-        $identityImagePath=$this->uploadFile($request,'identity_image','identities');
-        $profilePicturePath=$this->uploadFile($request,'profile_picture','profiles');
-        if(! $identityImagePath){
-            return response()->json(['message'=>'Identity image failed to upload.'],500);
-        }
+     $imagePaths = $photoController->uploadRegistrationImages($request);
+
         
         $user=User::create([
-            'first_name'=>$request->first_name,
-            'last_name'=>$request->last_name,
-            'email'=>$request->email,
-            'password'=>Hash::make($request->password),
-            'phone_number'=>$request->phone_number,
-            'role'=>$request->role,
-            // 'profile_picture'=>$request->profile_picture,
-            // 'identity_image'=>$request->identity_image,
-            'profile_picture'=>$profilePicturePath,
-            'identity_image'=>$identityImagePath,
-            'birth_date'=>$request->birth_date
+            // 'first_name'=>$request->first_name,
+            // 'last_name'=>$request->last_name,
+            // 'email'=>$request->email,
+            // 'password'=>Hash::make($request->password),
+            // 'phone_number'=>$request->phone_number,
+            // 'role'=>$request->role,
+            'first_name' => $validatedData['first_name'],
+            'last_name' => $validatedData['last_name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
+            'phone_number' => $validatedData['phone_number'],
+            'role' => $validatedData['role'],
+            'profile_picture'=>$imagePaths['profile_picture'],
+            'identity_image'=>$imagePaths['identity_image'],
+             'birth_date' => $validatedData['birth_date'],
+            // 'birth_date'=>$request->birth_date
         ]);
         return response()->json(['message'=>'Successfully registered.','user'=>$user],201);
     }
