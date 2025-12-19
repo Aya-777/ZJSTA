@@ -53,6 +53,11 @@ class ApartmentFilter
         if ($request->filled('min_area')) {
             $query->where('area' , '>=' ,(int) $request->min_area);
         }
+
+        // Property Type Filter
+        if ($request->filled('property_type')) {
+            $query->where('property_type' ,$request->property_type);
+        }
         
         return $query;
     }
