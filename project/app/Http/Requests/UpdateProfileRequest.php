@@ -28,8 +28,7 @@ class UpdateProfileRequest extends FormRequest
             'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $userId,
             'phone_number' => 'sometimes|required|string|unique:users,phone_number,' . $userId,
             'birth_date' => 'sometimes|required|date',
-            'profile_picture' => 'nullable|string|max:255',
-            // 'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 }

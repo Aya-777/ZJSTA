@@ -17,17 +17,17 @@ class ProfileController extends Controller
 
     public function update(UpdateProfileRequest $request){
           $user =$request->user();
-          $user->update($request->validated());
 
-          // $validatedData=$request->validated();
-          // if($request->hasFile('profile_picture')){
-          //   if($user->profile_picture){
-          //     Storage::disk('public')->delete($user->profile_picture);
-          //   }
-          //   $path=$request->file('profile_picture')->store('profiles','public');
-          //   $validatedData['profile_picture']=$path;
-          //   $user->update($validatedData);
-          // }
+          $validatedData=$request->validated();
+          if($request->hasFile('profile_picture')){
+            if($user->profile_picture){
+              Storage::disk('public')->delete($user->profile_picture);
+            }
+            $path=$request->file('profile_picture')->store('profiles','public');
+            $validatedData['profile_picture']=$path;
+          }
+
+           $user->update($request->validated());
 
           return response()->json([
             'status'=>'success',

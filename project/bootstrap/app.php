@@ -13,7 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
          $middleware->alias([
-            'is.admin' => \App\Http\Middleware\IsAdminMiddleware::class
+            'is.admin' => \App\Http\Middleware\IsAdminMiddleware::class,
+            'is.booking.owner' => \App\Http\Middleware\IsOwnerMiddleware::class,
+
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
