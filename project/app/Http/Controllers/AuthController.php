@@ -25,12 +25,7 @@ class AuthController extends Controller
 
         
         $user=User::create([
-            // 'first_name'=>$request->first_name,
-            // 'last_name'=>$request->last_name,
-            // 'email'=>$request->email,
-            // 'password'=>Hash::make($request->password),
-            // 'phone_number'=>$request->phone_number,
-            // 'role'=>$request->role,
+
             'first_name' => $validatedData['first_name'],
             'last_name' => $validatedData['last_name'],
             'email' => $validatedData['email'],
@@ -40,7 +35,7 @@ class AuthController extends Controller
             'profile_picture'=>$imagePaths['profile_picture'],
             'identity_image'=>$imagePaths['identity_image'],
              'birth_date' => $validatedData['birth_date'],
-            // 'birth_date'=>$request->birth_date
+
         ]);
         return response()->json(['message'=>'Successfully registered.','user'=>$user],201);
     }
