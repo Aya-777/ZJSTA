@@ -13,18 +13,6 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\ReviewController;
 
-// Apartment Routes
-Route::get('/apartments', [ApartmentController::class, 'index']);
-Route::get('/apartments/{apartment}', [ApartmentController::class, 'show']);
-Route::post('/apartments', [ApartmentController::class, 'store']);
-Route::put('/apartments/{apartment}', [ApartmentController::class, 'update']);
-Route::delete('/apartments/{apartment}', [ApartmentController::class, 'destroy']);
-Route::get('/apartments/search/{name}',[ApartmentController::class,'search']);
-
-// Apartment Images Routes 
-Route::get('/apartments/{apartment}/images', [ApartmentImageController::class, 'index']);
-Route::get('/apartment-images/{image}', [ApartmentImageController::class, 'show']);
-Route::delete('/apartment-images/{image}', [ApartmentImageController::class, 'destroy']);
 
 // Authentication system
 Route::post('/register',[AuthController::class,'register']);
@@ -39,11 +27,25 @@ Route::post('/profile/update',[ProfileController::class,'update']);
 
 // Admin managment
 Route::middleware(['auth:sanctum','is.admin'])->prefix('admin')->group(function(){
-    Route::get('/users',[AdminController::class,'index']);
-    Route::post('/users/{user}/approve',[AdminController::class,'approve']);
-    Route::delete('/users/{user}',[AdminController::class,'destroy']);
+Route::get('/users',[AdminController::class,'index']);
+Route::post('/users/{user}/approve',[AdminController::class,'approve']);
+Route::delete('/users/{user}',[AdminController::class,'destroy']);
 });
 
+
+
+// Apartment Routes
+Route::get('/apartments', [ApartmentController::class, 'index']);
+Route::get('/apartments/{apartment}', [ApartmentController::class, 'show']);
+Route::post('/apartments', [ApartmentController::class, 'store']);
+Route::put('/apartments/{apartment}', [ApartmentController::class, 'update']);
+Route::delete('/apartments/{apartment}', [ApartmentController::class, 'destroy']);
+Route::get('/apartments/search/{name}',[ApartmentController::class,'search']);
+
+// Apartment Images Routes 
+Route::get('/apartments/{apartment}/images', [ApartmentImageController::class, 'index']);
+Route::get('/apartment-images/{image}', [ApartmentImageController::class, 'show']);
+Route::delete('/apartment-images/{image}', [ApartmentImageController::class, 'destroy']);
 
 // Booking Routes
 Route::get('/bookings', [BookingController::class, 'index']);
