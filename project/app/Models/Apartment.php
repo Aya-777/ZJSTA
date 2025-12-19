@@ -36,6 +36,10 @@ class Apartment extends Model
     public function reviews(){
       return $this->hasMany(Review::class);
     }
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+    }
 
     // Filters
       public function scopeCity($query, $city){

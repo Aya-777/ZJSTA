@@ -12,6 +12,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\FavouriteController;
 
 
 // Authentication system
@@ -66,3 +67,7 @@ Route::get('/reviews', [ReviewController::class, 'index']);
 Route::get('/reviews/{review}', [ReviewController::class, 'show']);
 Route::put('/reviews/{review}', [ReviewController::class, 'update']);
 Route::delete('/reviews/{review}', [ReviewController::class, 'delete']);
+
+// Favourites Routes
+Route::get('/favourites', [FavouriteController::class, 'index']);
+Route::post('/favourites/{apartmentId}/toggle', [FavouriteController::class, 'toggleFavourite']);

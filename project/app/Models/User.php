@@ -55,18 +55,29 @@ class User extends Authenticatable
         ];
     }
 
+    // Relationships
     public function apartments()
     {
         return $this->hasMany(Apartment::class);
     }
-    
     public function bookings()
     {
         return $this->hasMany(Booking::class);
     }
-    
     public function reviews()
     {
       return $this->hasMany(Review::class);
     }
+    public function favorites()
+    {
+        return $this->belongsToMany(Apartment::class, 'favorites')->withTimestamps();
+    }
+
+
+    public function hasFavorited($apartment_id): bool
+    {
+        return $this->favorites()->where('apartment_id', $apartment_id)->exists();
+    }
+
+
 }
