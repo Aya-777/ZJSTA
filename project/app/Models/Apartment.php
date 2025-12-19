@@ -36,7 +36,6 @@ class Apartment extends Model
     public function reviews(){
       return $this->hasMany(Review::class);
     }
-    // To get the average rating: $apartment->reviews()->avg('rating');
 
     // Filters
       public function scopeCity($query, $city){

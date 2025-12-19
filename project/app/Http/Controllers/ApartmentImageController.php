@@ -6,50 +6,41 @@ use Illuminate\Http\Request;
 use App\Models\ApartmentImage;
 use App\Http\Resources\ImageResource;
 use App\Models\Apartment;
+use Illuminate\Support\Facades\Storage;
 
 class ApartmentImageController extends Controller
 {
     // index
     public function index(Apartment $apartment){
+       if (auth()->id() !== $apartment->user_id) {
+            abort(403);
+        }
         $images = $apartment->images;
         return ImageResource::collection($images);
     }
 
     // show
     public function show(Apartment $apartment, ApartmentImage $image){
-      if($image->apartment_id != $apartment->id){
-          abort(404);
-      }
-      return new ImageResource($image);
-    }
-
-    // create
-    public function store(Request $request){
-      $validated = $request->validate([
-        'apartment_id' => 'required|exists:apartments,id',
-        'image_url' => 'required|url',
-      ]);
-      $image = ApartmentImage::create($validated);
-      return new ImageResource($image);
-    }
-
-    // update
-    public function update(Apartment $apartment, ApartmentImage $image, Request $request){
-      $validated = $request->validate([
-        'apartment_id' => 'sometimes|exists:apartments,id',
-        'image_url' => 'sometimes|url',
-      ]);
-      $image->update($validated);
+       if (auth()->id() !== $apartment->user_id) {
+            abort(403);
+        }
       return new ImageResource($image);
     }
     
     // destroy
-    public function destroy(Apartment $apartment, ApartmentImage $image){
-        if($image->apartment_id != $apartment->id){
-            abort(404);
+    public function destroy(ApartmentImage $image)
+    {
+        if (auth()->id() !== $image->apartment->user_id) {
+            abort(403, 'Unauthorized');
         }
+
+        Storage::disk('public')->delete($image->image_path);
+
         $image->delete();
-        return response()->noContent();
+
+        return response()->json([
+            'message' => 'Image deleted successfully'
+        ]);
     }
 
 }

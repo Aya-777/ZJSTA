@@ -24,7 +24,7 @@ return new class extends Migration
             $table->double('area');
             $table->string('rental_type')->nullable();
             $table->boolean('is_furnished');
-            $table->float('rating')->default(0);
+            $table->float('rating',3,2)->default(0);
             $table->timestamps();
         });
     }

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Apartment;
 use App\Http\Resources\ApartmentResource;
 use App\Http\Filters\ApartmentFilter;
+use App\Http\Controllers\ApartmentImageController;
+use App\Models\ApartmentImage;
 
 class ApartmentController extends Controller
 {
@@ -32,12 +34,35 @@ class ApartmentController extends Controller
           'description' => 'required|string',
           'pricePerMonth' => 'required|numeric',
           'numberOfRooms' => 'required|integer',
-          'furnished' => 'required|boolean',
-          'rentalType' => 'required|string',
+          'numberOfBathrooms' => 'required|integer',
+          'is_furnished' => 'required|boolean',
+          'rental_type' => 'sometimes|string',
           'area' => 'required|numeric',
-          ]);
+          'property_type' => 'required|string',
+        ]);
+        $request->validate([
+            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+        ]);
         
         $apartment = Apartment::create($validated);
+
+        if ($request->hasFile('images')) {
+          $images = $request->file('images');
+
+          if (!is_array($images)) {
+              $images = [$images];
+          }
+
+
+          foreach ($images as $image) {
+              $path = $image->store('apartments', 'public');
+
+              ApartmentImage::create([
+                  'apartment_id' => $apartment->id,
+                  'image_path' => $path,
+              ]);
+          }
+        }
         return new ApartmentResource($apartment);
         
       }
@@ -51,9 +76,11 @@ class ApartmentController extends Controller
         'description' => 'sometimes|string',
         'pricePerMonth' => 'sometimes|numeric',
         'numberOfRooms' => 'sometimes|integer',
-        'furnished' => 'sometimes|boolean',
-        'rentalType' => 'sometimes|string',
+        'numberOfBathrooms' => 'sometimes|integer',
+        'is_furnished' => 'sometimes|boolean',
+        'rental_type' => 'sometimes|string',
         'area' => 'sometimes|numeric',
+        'property_type' => 'sometimes|string',
       ]);
 
       $apartment->update($validated);

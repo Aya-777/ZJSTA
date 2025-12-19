@@ -24,11 +24,14 @@ class ApartmentResource extends JsonResource
         'price_per_month' => number_format($this->pricePerMonth, 2),
         'number_of_rooms' => $this->numberOfRooms,
         'city' => City::find($this->city_id),
-        'images' => $this->whenLoaded('images'),
+        'images' => $this->images,
         'owner_id' => $this->user_id,
         'furnished' => $this->furnished,
         'rentalType' => $this->rentalType,
         'area' => $this->area,
+        'property_type' => $this->property_type,
+        'rating' => $this->rating,
+        
       ];
     }
 }

@@ -19,4 +19,15 @@ class Review extends Model
     public function apartment(){
       return $this->belongsTo(Apartment::class);
     }
+
+    protected static function booted()
+    {
+      static::saved(function ($review) {
+        $apartment = $review->apartment;
+        
+        $average = $apartment->reviews()->avg('rating');
+
+        $apartment->update(['rating' => $average]);
+    });
+  }
 }
