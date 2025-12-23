@@ -16,6 +16,12 @@ class Booking extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'pending_modifications' => 'array',
+        'start_date' => 'date',
+        'end_date' => 'date',
+    ];
+
     public function apartment()
     {
         return $this->belongsTo(Apartment::class);

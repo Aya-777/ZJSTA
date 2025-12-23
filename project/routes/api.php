@@ -54,6 +54,7 @@ Route::get('/bookings/{booking}', [BookingController::class, 'show']);
 Route::post('/bookings', [BookingController::class, 'store']);
 Route::put('/bookings/{booking}', [BookingController::class, 'update']);
 Route::delete('/bookings/{booking}', [BookingController::class, 'destroy']);
+Route::patch('/bookings/{booking}/status', [BookingController::class, 'updateStatus']);
 
 // City Routes
 Route::apiResource('cities', CityController::class)->only(['index', 'show']);
@@ -71,3 +72,9 @@ Route::delete('/reviews/{review}', [ReviewController::class, 'delete']);
 // Favourites Routes
 Route::get('/favourites', [FavouriteController::class, 'index']);
 Route::post('/favourites/{apartmentId}/toggle', [FavouriteController::class, 'toggleFavourite']);
+
+// Notifications Routes
+  Route::get('/notifications', [NotificationController::class, 'index']);
+  Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+  Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+  Route::get('/notifications/unread', [NotificationController::class, 'unread']);
