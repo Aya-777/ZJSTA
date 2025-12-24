@@ -11,13 +11,18 @@ use App\Services\FcmService;
 use App\Notifications\NewBookingNotification;
 use App\Notifications\UpdateBookingNotification;
 use Illuminate\Support\Facades\Notification;
+use App\Http\Filters\BookingFilter;
 
 class BookingController extends Controller
 {
   // index
-    public function index(){
+    public function index(Request $request){
       $user = User::find(1); // Temporarily hardcoded for testing use auth()->user();
-      $bookings = $user->bookings;
+      $query = Booking::where('user_id', $user->id);
+      $query = BookingFilter::apply($query ,$request);
+      $bookings = $query->with(['apartment','user'])
+                  ->orderBy('start_date', 'desc')
+                  ->paginate(15);
       return BookingResource::collection($bookings);
     }
     // show

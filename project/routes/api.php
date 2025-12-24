@@ -13,6 +13,7 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\FavouriteController;
+use App\Http\Controllers\NotificationController;
 
 
 // Authentication system
