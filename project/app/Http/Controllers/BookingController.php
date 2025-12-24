@@ -10,6 +10,7 @@ use App\Http\Resources\BookingResource;
 use App\Services\FcmService;
 use App\Notifications\NewBookingNotification;
 use App\Notifications\UpdateBookingNotification;
+use App\Notifications\RequestUpdateBookingNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Http\Filters\BookingFilter;
 
@@ -27,7 +28,7 @@ class BookingController extends Controller
     }
     // show
     public function show(Booking $booking){
-      $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
+      $user = User::find(1); // Temporarily hardcoded for testing use auth()->user();
       if($user->id !== $booking->user_id){
           abort(404);
       }
@@ -81,16 +82,13 @@ class BookingController extends Controller
 
     // update
     public function update(Booking $booking, Request $request){
-      $user = User::find(1); // Temporarily hardcoded for testing use auth()->user();
+      $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
       if($user->id != $booking->user_id){
         abort(403);
       }
       $validated = $request->validate([
-        'user_id' => 'sometimes|exists:users,id',
-        'apartment_id' => 'sometimes|exists:apartments,id',
-        'start_date' => 'sometimes|date',
-        'end_date' => 'sometimes|date|after:start_date',
-        'status' => 'sometimes|string',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date|after:start_date',
       ]);
 
       $booking->update([
@@ -103,7 +101,7 @@ class BookingController extends Controller
 
       $apartment = Apartment::find($booking->apartment_id);
       $owner = $apartment->user;
-      $owner->notify(new UpdateBookingNotification($booking));
+      $owner->notify(new RequestUpdateBookingNotification($booking));
       if ($owner->fcm_token) {
         try {
             $fcm->sendNotification(

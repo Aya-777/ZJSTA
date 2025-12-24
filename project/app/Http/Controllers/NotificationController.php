@@ -9,13 +9,15 @@ use App\Models\User;
 class NotificationController extends Controller
 {
   public function index() {
-    return auth()->user()->notifications;
+    $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
+    return $user->notifications;
   }
-
+  
   public function unread() {
-    return auth()->user()->unreadNotifications;
+    $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
+    return $user->unreadNotifications;
   }
-
+  
   public function markAsRead($id) {
     $notification = auth()->user()->notifications()->where('id', $id)->first();
     if ($notification) {
@@ -27,8 +29,10 @@ class NotificationController extends Controller
   }
   
   public function markAllAsRead()
-    {
-        auth()->user()->unreadNotifications->markAsRead();
-        return response()->json(['message' => 'All marked as read']);
-    }
+  {
+    $user = User::find(1); // Temporarily hardcoded for testing use auth()->user();
+    // auth()->user()->unreadNotifications->markAsRead();
+    $user->unreadNotifications->markAsRead();
+    return response()->json(['message' => 'All marked as read']);
+  }
 }

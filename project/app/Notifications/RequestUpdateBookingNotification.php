@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class UpdateBookingNotification extends Notification
+class RequestUpdateBookingNotification extends Notification
 {
     use Queueable;
 
@@ -17,7 +17,7 @@ class UpdateBookingNotification extends Notification
     protected $booking;
     public function __construct($booking)
     {
-        $this->booking = $booking;
+      $this->booking=$booking;
     }
 
     /**
@@ -37,11 +37,10 @@ class UpdateBookingNotification extends Notification
     public function toDatabase($notifiable)
     {
         $message = match($this->booking->status) {
-            'confirmed' => "Your booking for {$this->booking->apartment->title} is confirmed!",
-            'rejected'  => "Your booking request was declined.",
-            'pending'  => "Your booking request is pending approval.",
+            'confirmed' => "You confirmed the booking for {$this->booking->apartment->title}.",
+            'rejected'  => "You rejected the booking for {$this->booking->apartment->title}.",
+            'pending'  => "Booking #{$this->booking->id} has been updated by the guest.",
         };
-
       return [
           'booking_id' => $this->booking->id,
           'status' => $this->booking->status,
