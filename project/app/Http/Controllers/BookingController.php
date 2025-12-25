@@ -39,6 +39,7 @@ class BookingController extends Controller
     }
     // store
     public function store(Request $request, FcmService $fcm){
+      return DB::transaction(function () use ($request) {
       // validate data
         $validated = $request->validate([
           'user_id' => 'required|exists:users,id',
@@ -69,6 +70,7 @@ class BookingController extends Controller
         $booking = Booking::create($validated);
 
         return new BookingResource($booking);
+      });
     }
 
     // sending request update (renter)
