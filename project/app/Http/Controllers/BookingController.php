@@ -7,27 +7,27 @@ use App\Models\Booking;
 use App\Models\Apartment;
 use App\Models\User;
 use App\Http\Resources\BookingResource;
+use Illuminate\Support\Facades\Auth; 
 
 class BookingController extends Controller
 {
   // index
     public function index(){
-      $user = User::find(1); // Temporarily hardcoded for testing use auth()->user();
+      $user = Auth::user();
       $bookings = $user->bookings;
       return BookingResource::collection($bookings);
     }
     // show
     public function show(Booking $booking){
-      $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
-      if($user->id !== $booking->user_id){
-          abort(404);
-      }
+
+      if (Auth::id() !== $booking->user_id) {
+        return response()->json(['message' => 'Unauthorized'], 403);
+        }
       return new BookingResource($booking);
     }
     // store
     public function store(Request $request){
         $validated = $request->validate([
-          'user_id' => 'required|exists:users,id',
           'apartment_id' => 'required|exists:apartments,id',
           'start_date' => 'required|date',
           'end_date' => 'required|date|after:start_date',
@@ -48,6 +48,8 @@ class BookingController extends Controller
             return response()->json(['message' => 'The apartment is already booked for the selected dates.'], 409);
         } 
         
+        $validated['user_id'] = Auth::id();
+
         $booking = Booking::create($validated);
         return new BookingResource($booking);
     }
@@ -65,9 +67,8 @@ class BookingController extends Controller
     }
     // destroy
     public function destroy(Booking $booking){
-        $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
-        if($user->id !== $booking->user_id){
-            abort(404);
+        if (Auth::id() !== $booking->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
         $booking->delete();
         return response()->noContent();

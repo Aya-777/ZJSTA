@@ -11,6 +11,7 @@ use App\Http\Controllers\ApartmentImageController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\OwnerBookingController;
 
 // Apartment Routes
 Route::get('/apartments', [ApartmentController::class, 'index']);
@@ -58,3 +59,9 @@ Route::apiResource('cities', CityController::class)->only(['index', 'show']);
 
 // upload image
 Route::post('/apartments/{apartment}/photos', [PhotoController::class, 'upload']);
+
+// Owner's Approval/Rejection Routes 
+Route::middleware(['auth:sanctum', 'is.owner']) ->group(function () {
+    Route::post('/owner/bookings/{booking}/approve', [OwnerBookingController::class, 'approve']);
+    Route::post('/owner/bookings/{booking}/reject', [OwnerBookingController::class, 'reject']);
+});

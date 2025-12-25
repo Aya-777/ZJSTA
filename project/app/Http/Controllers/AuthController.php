@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\PhotoController;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WelcomeEmail;
+use App\Mail\SuccessfulLoginEmail;
 
 class AuthController extends Controller
 {
@@ -37,6 +40,9 @@ class AuthController extends Controller
              'birth_date' => $validatedData['birth_date'],
 
         ]);
+
+         Mail::to($user->email)->send(new WelcomeEmail($user));
+
         return response()->json(['message'=>'Successfully registered.','user'=>$user],201);
     }
 
@@ -47,9 +53,12 @@ class AuthController extends Controller
         }
         $user=auth()->user();
         if(! $user->is_active){
-            // Auth::logout();? if the account not active logout
+            // Auth::logout();? if the account not active logout;
             return response()->json(['message'=>'Your account is pending.'],403);
         }
+
+         Mail::to($user->email)->send(new SuccessfulLoginEmail($user));
+
         $token=$user->createToken('auth_token')->plainTextToken;
         return response()->json([
             'message'=>'Login successful','access_token'=>$token,
