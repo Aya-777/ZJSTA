@@ -22,7 +22,7 @@ class ApartmentImageController extends Controller
     }
 
     // store
-    public function store(Apartment $apartment, ApartmentImage $image){
+    public function store(Apartment $apartment, Request $request){
         $request->validate([
             'image' => 'required|image|max:2048',
         ]);
@@ -31,7 +31,7 @@ class ApartmentImageController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $path = $request->file('image')->store('apartment_images', 'public');
+        $path = $request->file('image')->store('apartment', 'public');
 
         $image = ApartmentImage::create([
             'apartment_id' => $apartment->id,
