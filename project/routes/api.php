@@ -14,6 +14,7 @@ use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\FavouriteController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OwnerController;
 
 
 // Authentication system
@@ -43,6 +44,8 @@ Route::post('/apartments', [ApartmentController::class, 'store']);
 Route::put('/apartments/{apartment}', [ApartmentController::class, 'update']);
 Route::delete('/apartments/{apartment}', [ApartmentController::class, 'destroy']);
 Route::get('/apartments/search/{name}',[ApartmentController::class,'search']);
+Route::get('/owner/apartments', [OwnerController::class, 'getMyApartments']);
+Route::get('/owner/apartments/{id}/bookings', [OwnerController::class, 'getApartmentBookings']);
 
 // Apartment Images Routes 
 Route::get('/apartments/{apartment}/images', [ApartmentImageController::class, 'index']);
