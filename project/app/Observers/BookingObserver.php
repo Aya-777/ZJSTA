@@ -11,9 +11,14 @@ use App\Notifications\RequestUpdateBookingNotification;
 
 class BookingObserver
 {
-    /**
-     * Handle the Booking "created" event.
-     */
+
+     protected $fcm;
+
+    public function __construct(FcmService $fcmService)
+    {
+        $this->fcm = $fcmService;
+    }
+
     public function created(Booking $booking): void
     {
       $apartment = $booking->apartment;
@@ -21,7 +26,7 @@ class BookingObserver
       $owner->notify(new NewBookingNotification($booking));
       if ($owner->fcm_token) {
         try {
-            $fcm->sendNotification(
+            $this->fcm->sendNotification(
                 $owner->fcm_token,
                 'New Rental Request!',
                 'Someone wants to rent your apartment. Please approve or reject.',
@@ -39,7 +44,6 @@ class BookingObserver
      */
     public function updated(Booking $booking)
     {
-      // Only trigger if the status was changed to 'completed'
       if ($booking->wasChanged('status') && $booking->status === 'completed') {
           $renter = $booking->user;
           
@@ -47,7 +51,7 @@ class BookingObserver
           $renter->notify(new BookingCompletedNotification($booking));
           // Send Push to Renter
           if ($renter->fcm_token) {
-            $fcm->sendNotification($renter->fcm_token, 'Booking Completed!', 'Your booking has been completed! Hope you enjoyed your stay. Please rate the apartment.',
+            $this->fcm->sendNotification($renter->fcm_token, 'Booking Completed!', 'Your booking has been completed! Hope you enjoyed your stay. Please rate the apartment.',
              [
                 'booking_id' => (string)$booking->id,
                 'status' => 'completed'
@@ -55,7 +59,6 @@ class BookingObserver
           }
       }
 
-      // Only trigger if the status was changed to 'confirmed/rejected'
       if ($booking->wasChanged('status') && ($booking->status === 'confirmed' || $booking->status === 'rejected')) {
         // Notify the renter
         $renter = $booking->user;
@@ -67,7 +70,6 @@ class BookingObserver
         $this->notifyRenter($renter, $booking, $title, $message);
       }
 
-      // Only trigger if the status was changed to 'cancelled'
       if ($booking->wasChanged('status') && $booking->status === 'cancelled') {
 
         $renter = $booking->user;
@@ -79,7 +81,7 @@ class BookingObserver
           $owner->notify(new RequestUpdateBookingNotification($booking));
           if ($owner->fcm_token) {
             try {
-                $fcm->sendNotification(
+                $this->fcm->sendNotification(
                     $owner->fcm_token,
                     'Cancelled Booking',
                     'Someone cancelled their booking.',
@@ -101,7 +103,7 @@ class BookingObserver
           $owner->notify(new RequestUpdateBookingNotification($booking));
           if ($owner->fcm_token) {
             try {
-                $fcm->sendNotification(
+                $this->fcm->sendNotification(
                     $owner->fcm_token,
                     'Update Booking Request',
                     'Someone wants to update their booking. Please approve or reject.',
@@ -129,7 +131,7 @@ class BookingObserver
 
       // Send Push to Renter
       if ($renter->fcm_token) {
-        $fcm->sendNotification($renter->fcm_token, $title, $message, [
+        $this->fcm->sendNotification($renter->fcm_token, $title, $message, [
             'booking_id' => (string)$booking->id,
             'status' => $decision
         ]);
