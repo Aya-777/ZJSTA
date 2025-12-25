@@ -11,7 +11,10 @@ class FavouriteController extends Controller
 {
     public function toggleFavourite(Request $request, $apartmentId)
     {
-      $user = User::Find(1); // auth()->user();
+      $user = auth()->user();
+      if($user->id != $request->user_id){
+        abort(403);
+      }
       if($user->hasFavorited($apartmentId)){
         $user->favorites()->detach($apartmentId);
         return response()->json(['message' => 'Apartment removed from favorites'], 200);
@@ -22,7 +25,7 @@ class FavouriteController extends Controller
   }
 public function index()
 {
-    $user = User::Find(1); // auth()->user();
+    $user = auth()->user();
 
     $favorites = DB::table('favorites')
                    ->where('user_id', $user->id)

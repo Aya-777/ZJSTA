@@ -69,14 +69,15 @@ Route::get('/apartment-images/{image}', [ApartmentImageController::class, 'show'
 Route::delete('/apartment-images/{image}', [ApartmentImageController::class, 'destroy']);
 
 // Booking Routes
-Route::get('/bookings', [BookingController::class, 'index']);
-Route::get('/bookings/{booking}', [BookingController::class, 'show']);
 Route::post('/bookings', [BookingController::class, 'store']);
-Route::put('/bookings/{booking}', [BookingController::class, 'update']);
-Route::delete('/bookings/{booking}', [BookingController::class, 'destroy']);
-Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
+
 Route::middleware(['auth:sanctum', 'is.owner']) ->group(function () {
-Route::patch('/bookings/{booking}/status', [BookingController::class, 'updateStatus']);
+  Route::get('/bookings', [BookingController::class, 'index']);
+  Route::get('/bookings/{booking}', [BookingController::class, 'show']);
+  Route::put('/bookings/{booking}', [BookingController::class, 'update']);
+  Route::delete('/bookings/{booking}', [BookingController::class, 'destroy']);
+  Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
+  Route::patch('/bookings/{booking}/status', [BookingController::class, 'updateStatus']);
 });
 
 // City Routes

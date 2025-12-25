@@ -16,8 +16,6 @@ class ReviewController extends Controller
     $request->validate([
       'apartment_id' => 'required|exists:apartments,id',
     ]);
-    // $apartment = Apartment::find($request->apartment_id);
-    // $reviews = $apartment->reviews;
     $reviews = Review::where('apartment_id', $request->apartment_id)
         ->with('user') // Eager load the user who wrote the review
         ->latest()     // Show newest reviews first
@@ -36,18 +34,14 @@ class ReviewController extends Controller
         'rating' => 'required|integer|min:1|max:5',
         'comment' => 'nullable|string'
     ]);
+
     $booking = Booking::where('id', $request->booking_id)
-    ->where('user_id', 2) // hardcoded for testing
+    ->where('user_id', auth()->id())
     ->where('status', 'completed')
     ->firstOrFail();
-    //$booking = auth()->user()->bookings()
-    // ->where('id', $request->booking_id)
-    // ->where('status', 'completed')
-    // ->firstOrFail();
-    
     
     $review = Review::create([
-      'user_id' => 2, // hardcoded just for testing
+      'user_id' => auth()->id(),
       'apartment_id' => $booking->apartment_id,
       'booking_id' => $booking->id,
       'rating' => $request->rating,
@@ -57,9 +51,9 @@ class ReviewController extends Controller
   }
   
   public function update(Review $review, Request $request){
-    $user = User::find(2); // auth()->user;
+    $user = auth()->user();
     if($user->id != $review->user_id){
-      abort(404);
+      abort(403);
     }
     $validated = $request->validate([
       'booking_id' => 'sometimes|exists:bookings,id',
@@ -70,9 +64,9 @@ class ReviewController extends Controller
     return new ReviewResource($review);
   }
   public function delete(Review $review){
-    $user = User::find(2); // auth()->user;
+    $user = auth()->user();
     if($user->id != $review->user_id){
-      abort(404);
+      abort(403);
     }
     $review->delete();
     return response()->noContent();

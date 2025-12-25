@@ -4,9 +4,6 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\City;
-use App\Models\ApartmentImage;
-// use App\Http\Resources\ImageResource;
 
 class ReviewResource extends JsonResource
 {

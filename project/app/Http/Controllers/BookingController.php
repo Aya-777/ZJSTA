@@ -41,6 +41,11 @@ class BookingController extends Controller
     }
     // store
     public function store(Request $request, FcmService $fcm){
+
+      if(auth()->user()->id != $request->user_id){
+        abort(403);
+      }
+
       return DB::transaction(function () use ($request) {
       // validate data
         $validated = $request->validate([
@@ -77,7 +82,7 @@ class BookingController extends Controller
 
     // sending request update (renter)
     public function update(Booking $booking, Request $request){
-      $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
+      $user = auth()->user();
       if($user->id != $booking->user_id){
         abort(403);
       }
@@ -112,9 +117,9 @@ class BookingController extends Controller
     }
 
     public function cancel(Booking $booking){
-      $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
+        $user = auth()->user(); 
         if($user->id !== $booking->user_id){
-            abort(404);
+            abort(403);
         }
         $booking->status = 'cancelled';
         $booking->save();
@@ -130,9 +135,9 @@ class BookingController extends Controller
     $owner = $booking->apartment->user;
     $decision = $request->status;
     
-    // if ($request->status != 'completed' && auth()->id() !== $owner->id) {
-    //   return response()->json(['message' => 'Unauthorized'], 403);
-    // }
+    if ($request->status != 'completed' && auth()->id() !== $owner->id) {
+      return response()->json(['message' => 'Unauthorized'], 403);
+    }
     
     // confirm update booking 
     if (!empty($booking->pending_modifications)&& $decision === 'confirmed') {

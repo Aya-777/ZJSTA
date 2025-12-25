@@ -12,18 +12,12 @@ class ApartmentImageController extends Controller
 {
     // index
     public function index(Apartment $apartment){
-       if (auth()->id() !== $apartment->user_id) {
-            abort(403);
-        }
         $images = $apartment->images;
         return ImageResource::collection($images);
     }
 
     // show
     public function show(Apartment $apartment, ApartmentImage $image){
-       if (auth()->id() !== $apartment->user_id) {
-            abort(403);
-        }
       return new ImageResource($image);
     }
     
