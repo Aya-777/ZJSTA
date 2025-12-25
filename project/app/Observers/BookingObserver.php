@@ -4,10 +4,10 @@ namespace App\Observers;
 
 use App\Models\Booking;
 use App\Services\FcmService;
-use App\Notifications\NewBookingNotification;
-use App\Notifications\BookingCompletedNotification;
-use App\Notifications\UpdateBookingNotification;
-use App\Notifications\RequestUpdateBookingNotification;
+use App\Notifications\Bookings\NewBookingNotification;
+use App\Notifications\Bookings\BookingCompletedNotification;
+use App\Notifications\Bookings\UpdateBookingNotification;
+use App\Notifications\Bookings\RequestUpdateBookingNotification;
 
 class BookingObserver
 {

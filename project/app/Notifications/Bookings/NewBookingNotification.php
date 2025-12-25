@@ -1,17 +1,20 @@
 <?php
 
-namespace App\Notifications;
+namespace App\Notifications\Bookings;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class BookingCompletedNotification extends Notification
+class NewBookingNotification extends Notification
 {
     use Queueable;
 
-    protected $booking;
+    /**
+     * Create a new notification instance.
+     */
+      protected $booking;
     public function __construct($booking)
     {
         $this->booking = $booking;
@@ -32,10 +35,12 @@ class BookingCompletedNotification extends Notification
      */
     public function toDatabase(object $notifiable): array
     {
-        return [
-          'booking_id' => $this->booking->id,
-          'title' => 'Booking Completed!',
-          'message' => 'Your booking has been completed! Hope you enjoyed your stay. Please rate the apartment.',
+      return [
+        'booking_id' => $this->booking->id,
+        'title' => 'New Booking Request',
+        'message' => 'Someone wants to book apartment #' . $this->booking->apartment_id,
+        'user_id' => $this->booking->user_id,
         ];
     }
+
 }

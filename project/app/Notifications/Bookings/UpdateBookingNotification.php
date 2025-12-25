@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Notifications;
+namespace App\Notifications\Bookings;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class RequestUpdateBookingNotification extends Notification
+class UpdateBookingNotification extends Notification
 {
     use Queueable;
 
@@ -17,7 +17,7 @@ class RequestUpdateBookingNotification extends Notification
     protected $booking;
     public function __construct($booking)
     {
-      $this->booking=$booking;
+        $this->booking = $booking;
     }
 
     /**
@@ -37,13 +37,14 @@ class RequestUpdateBookingNotification extends Notification
     public function toDatabase($notifiable)
     {
         $message = match($this->booking->status) {
-            'confirmed' => "You confirmed the booking for {$this->booking->apartment->title}.",
-            'rejected'  => "You rejected the booking for {$this->booking->apartment->title}.",
-            'pending'  => "Booking #{$this->booking->id} has been updated by the guest.",
-            'cancelled'  => "You cancelled the booking for {$this->booking->apartment->title}.",
-            'update_pending' => "A guest has requested to update their booking for {$this->booking->apartment->title}. Please review the changes.",
-            default => "The status of your booking for {$this->booking->apartment->title} is {$this->booking->status}.",
+            'confirmed' => "Your booking for {$this->booking->apartment->title} is confirmed!",
+            'rejected'  => "Your booking request was declined.",
+            'pending'  => "Your booking request is pending approval.",
+            'cancelled' => "Your booking has been cancelled successfully.",
+            'update_pending' => "Your booking update request is pending approval.",
+            default => "Your booking status is the same.",
         };
+
       return [
           'booking_id' => $this->booking->id,
           'status' => $this->booking->status,

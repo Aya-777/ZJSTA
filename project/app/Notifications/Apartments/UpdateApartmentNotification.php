@@ -1,25 +1,24 @@
 <?php
 
-namespace App\Notifications;
+namespace App\Notifications\Apartments;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewBookingNotification extends Notification
+class UpdateApartmentNotification extends Notification
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
      */
-      protected $booking;
-    public function __construct($booking)
+    protected $apartment;
+    public function __construct($apartment)
     {
-        $this->booking = $booking;
+        $this->apartment = $apartment;
     }
-
     /**
      * Get the notification's delivery channels.
      *
@@ -36,11 +35,9 @@ class NewBookingNotification extends Notification
     public function toDatabase(object $notifiable): array
     {
       return [
-        'booking_id' => $this->booking->id,
-        'title' => 'New Booking Request',
-        'message' => 'Someone wants to book apartment #' . $this->booking->apartment_id,
-        'user_id' => $this->booking->user_id,
+        'apartment_id' => $this->apartment->id,
+        'title' => 'Apartment Updated',
+        'message' => 'You have successfully updated your apartment: ' . $this->apartment->title,
         ];
     }
-
 }

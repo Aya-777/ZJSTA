@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Booking;
 use App\Observers\BookingObserver;
+use App\Models\Apartment;
+use App\Observers\ApartmentObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,5 +24,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
       Booking::observe(BookingObserver::class);
+      Apartment::observe(ApartmentObserver::class);
     }
 }
