@@ -14,7 +14,7 @@ class NotificationController extends Controller
   }
   
   public function unread() {
-    $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
+    $user = User::find(3); // Temporarily hardcoded for testing use auth()->user();
     return $user->unreadNotifications;
   }
   

@@ -19,16 +19,19 @@ class BookingController extends Controller
   // index
     public function index(Request $request){
       $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
+
+    // filter bookings
       $query = Booking::where('user_id', $user->id);
       $query = BookingFilter::apply($query ,$request);
       $bookings = $query->with(['apartment','user'])
                   ->orderBy('start_date', 'desc')
                   ->paginate(15);
+
       return BookingResource::collection($bookings);
     }
     // show
     public function show(Booking $booking){
-      $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
+      $user = User::find(3); // Temporarily hardcoded for testing use auth()->user();
       if($user->id !== $booking->user_id){
           abort(404);
       }
@@ -36,6 +39,7 @@ class BookingController extends Controller
     }
     // store
     public function store(Request $request, FcmService $fcm){
+      // validate data
         $validated = $request->validate([
           'user_id' => 'required|exists:users,id',
           'apartment_id' => 'required|exists:apartments,id',
@@ -44,6 +48,7 @@ class BookingController extends Controller
           'status' => 'sometimes|string|default:pending',
         ]);
         
+      // find overlapping bookings
         $apartment = Apartment::find($validated['apartment_id']);
         $apartmentBookings = $apartment->bookings()
           ->where('status','confirmed')
@@ -60,61 +65,34 @@ class BookingController extends Controller
             return response()->json(['message' => 'The apartment is already booked for the selected dates.'], 409);
         } 
         
+      // create booking
         $booking = Booking::create($validated);
-
-        $owner = $apartment->user;
-        $owner->notify(new NewBookingNotification($booking));
-        if ($owner->fcm_token) {
-        try {
-            $fcm->sendNotification(
-                $owner->fcm_token,
-                'New Rental Request!',
-                'Someone wants to rent your apartment. Please approve or reject.',
-                ['booking_id' => (string)$booking->id, 'action' => 'review_request'] 
-            );
-        } catch (\Exception $e) {
-            // Log it, but don't stop the booking from succeeding
-            \Log::error("Push failed: " . $e->getMessage());
-        }
-      }
 
         return new BookingResource($booking);
     }
 
-    // update
+    // sending request update (renter)
     public function update(Booking $booking, Request $request){
       $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
       if($user->id != $booking->user_id){
         abort(403);
       }
+
+    // validate data
       $validated = $request->validate([
         'start_date' => 'required|date',
         'end_date' => 'required|date|after:start_date',
       ]);
 
+    // request update booking with pending modifications
       $booking->update([
         'pending_modifications' => [
           'start_date' => $request->start_date,
           'end_date' => $request->end_date,
         ],
-        'status' => 'pending'
+        'status' => 'update_pending'
       ]);
 
-      $apartment = Apartment::find($booking->apartment_id);
-      $owner = $apartment->user;
-      $owner->notify(new RequestUpdateBookingNotification($booking));
-      if ($owner->fcm_token) {
-        try {
-            $fcm->sendNotification(
-                $owner->fcm_token,
-                'Update Booking Request',
-                'Someone wants to update their booking. Please approve or reject.',
-                ['booking_id' => (string)$booking->id, 'action' => 'update_request'] 
-            );
-        } catch (\Exception $e) {
-            \Log::error("Push failed: " . $e->getMessage());  
-        }
-      }
 
       return new BookingResource($booking);
     }
@@ -129,8 +107,10 @@ class BookingController extends Controller
         return response()->noContent();
     }
 
-  public function updateStatus(Request $request, $id, FcmService $fcm){      
-    $request->validate(['status' => 'required|in:confirmed,rejected,completed']);
+  // update status confirm or reject by (owner)
+  public function updateStatus(Request $request, $id, FcmService $fcm){   
+
+    $request->validate(['status' => 'required|in:confirmed,rejected']);
     
     $booking = Booking::findOrFail($id);
     $owner = $booking->apartment->user;
@@ -140,7 +120,7 @@ class BookingController extends Controller
     //   return response()->json(['message' => 'Unauthorized'], 403);
     // }
     
-
+    // confirm update booking 
     if (!empty($booking->pending_modifications)&& $decision === 'confirmed') {
         $booking->update([
             'start_date' => $booking->pending_modifications['start_date'],
@@ -155,20 +135,6 @@ class BookingController extends Controller
         ]);
       }
 
-    // Notify the renter
-    $renter = $booking->user;
-    $title = $decision == 'confirmed' ? 'Booking Approved!' :
-    ($decision == 'rejected' ? 'Booking Rejected!' :
-    'Booking Completed!');
-    $message = $decision == 'confirmed' 
-      ? "Pack your bags! Your stay at {$booking->apartment->title} is confirmed."
-      : ( $decision == 'rejected' 
-          ? "We're sorry to inform you that your booking request for {$booking->apartment->title} has been rejected."
-          : "Thank you for staying at {$booking->apartment->title}! We hope you had a great time.");
-
-    $this->notifyRenter($renter, $booking, $title, $message);
-
-
     // Reject all overlapping pending bookings
     $apartment = $booking->apartment;
     $apartmentBookings = $apartment->bookings()
@@ -181,34 +147,16 @@ class BookingController extends Controller
                     ->where('end_date', '>=', $booking->end_date);
                 });
       })->get();
+
       if(!empty($apartmentBookings)){
-        foreach($apartmentBookings as $b){
-          $b->update(['status' => 'rejected']);
-
-          // Notify the renter
-          $renter = $b->user;
-          $title = 'Your Booking has been rejected.';
-          $message = 'Sorry the apartment is already booked for the selected dates( ' . $b->start_date . ' to ' . $b->end_date . ' )';
-
-          $this->notifyRenter($renter, $b, $title, $message);
+        foreach ($apartmentBookings as $b) {
+          $b->status = 'rejected';
+          $b->save();
         }
-      }
+  }
       
 
     return response()->json(['message' => 'Booking updated successfully', 'status' => $decision]);
   }
-
-     protected function notifyRenter($renter, $booking, $title, $message){
-      // Save to DB history for Renter
-      $renter->notify(new UpdateBookingNotification($booking));
-
-      // Send Push to Renter
-      if ($renter->fcm_token) {
-        $fcm->sendNotification($renter->fcm_token, $title, $message, [
-            'booking_id' => (string)$booking->id,
-            'status' => $decision
-        ]);
-      }
-    }
 
 }
