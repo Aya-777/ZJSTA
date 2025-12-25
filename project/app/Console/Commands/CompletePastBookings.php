@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Models\Booking;
 
 class CompletePastBookings extends Command
 {
@@ -26,8 +27,12 @@ class CompletePastBookings extends Command
     public function handle()
     {
       $affectedRows = Booking::where('status', 'confirmed')
-          ->where('end_date', '<', now())
-          ->update(['status' => 'completed']);
+          ->where('end_date', '<', now())->get();
+
+          foreach ($affectedRows as $booking) {
+              $booking->status = 'completed';
+              $booking->save();
+          }
 
       $this->info("Successfully completed {$affectedRows} bookings.");
     }
