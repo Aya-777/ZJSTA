@@ -55,6 +55,7 @@ Route::get('/bookings/{booking}', [BookingController::class, 'show']);
 Route::post('/bookings', [BookingController::class, 'store']);
 Route::put('/bookings/{booking}', [BookingController::class, 'update']);
 Route::delete('/bookings/{booking}', [BookingController::class, 'destroy']);
+Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
 Route::patch('/bookings/{booking}/status', [BookingController::class, 'updateStatus']);
 
 // City Routes

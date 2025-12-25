@@ -40,6 +40,9 @@ class RequestUpdateBookingNotification extends Notification
             'confirmed' => "You confirmed the booking for {$this->booking->apartment->title}.",
             'rejected'  => "You rejected the booking for {$this->booking->apartment->title}.",
             'pending'  => "Booking #{$this->booking->id} has been updated by the guest.",
+            'cancelled'  => "You cancelled the booking for {$this->booking->apartment->title}.",
+            'update_pending' => "A guest has requested to update their booking for {$this->booking->apartment->title}. Please review the changes.",
+            default => "The status of your booking for {$this->booking->apartment->title} is {$this->booking->status}.",
         };
       return [
           'booking_id' => $this->booking->id,

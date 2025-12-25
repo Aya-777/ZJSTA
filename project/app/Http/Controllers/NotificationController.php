@@ -14,7 +14,7 @@ class NotificationController extends Controller
   }
   
   public function unread() {
-    $user = User::find(3); // Temporarily hardcoded for testing use auth()->user();
+    $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
     return $user->unreadNotifications;
   }
   
@@ -30,7 +30,7 @@ class NotificationController extends Controller
   
   public function markAllAsRead()
   {
-    $user = User::find(1); // Temporarily hardcoded for testing use auth()->user();
+    $user = User::find(3); // Temporarily hardcoded for testing use auth()->user();
     // auth()->user()->unreadNotifications->markAsRead();
     $user->unreadNotifications->markAsRead();
     return response()->json(['message' => 'All marked as read']);

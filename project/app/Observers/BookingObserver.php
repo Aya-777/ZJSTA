@@ -47,7 +47,7 @@ class BookingObserver
           $renter->notify(new BookingCompletedNotification($booking));
           // Send Push to Renter
           if ($renter->fcm_token) {
-            $fcm->sendNotification($renter->fcm_token, 'Booking Completed!', 'Your booking has been completed! HOpe you enjoyed your stay. Please rate the apartment.',
+            $fcm->sendNotification($renter->fcm_token, 'Booking Completed!', 'Your booking has been completed! Hope you enjoyed your stay. Please rate the apartment.',
              [
                 'booking_id' => (string)$booking->id,
                 'status' => 'completed'
@@ -67,6 +67,33 @@ class BookingObserver
         $this->notifyRenter($renter, $booking, $title, $message);
       }
 
+      // Only trigger if the status was changed to 'cancelled'
+      if ($booking->wasChanged('status') && $booking->status === 'cancelled') {
+
+        $renter = $booking->user;
+        $title = 'Booking Cancelled!';
+        $message = "Your booking for {$booking->apartment->title} has been cancelled successfully.";
+        $apartment = $booking->apartment;
+        $owner = $apartment->user;
+        // notify owner
+          $owner->notify(new RequestUpdateBookingNotification($booking));
+          if ($owner->fcm_token) {
+            try {
+                $fcm->sendNotification(
+                    $owner->fcm_token,
+                    'Cancelled Booking',
+                    'Someone cancelled their booking.',
+                    ['booking_id' => (string)$booking->id]
+                );
+            } catch (\Exception $e) {
+                \Log::error("Push failed: " . $e->getMessage());  
+            }
+          }
+
+        // notify renter
+        $this->notifyRenter($renter, $booking, $title, $message);
+      }
+
       if($booking->wasChanged('status') && $booking->status === 'update_pending'){
         $apartment = $booking->apartment;
         $owner = $apartment->user;
@@ -83,7 +110,7 @@ class BookingObserver
             } catch (\Exception $e) {
                 \Log::error("Push failed: " . $e->getMessage());  
             }
-          }
+        }
       }
 
     }
@@ -94,22 +121,6 @@ class BookingObserver
     public function deleted(Booking $booking): void
     {
       
-    }
-
-    /**
-     * Handle the Booking "restored" event.
-     */
-    public function restored(Booking $booking): void
-    {
-        //
-    }
-
-    /**
-     * Handle the Booking "force deleted" event.
-     */
-    public function forceDeleted(Booking $booking): void
-    {
-        //
     }
 
     protected function notifyRenter($renter, $booking, $title, $message){

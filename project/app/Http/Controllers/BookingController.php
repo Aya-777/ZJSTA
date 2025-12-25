@@ -31,7 +31,7 @@ class BookingController extends Controller
     }
     // show
     public function show(Booking $booking){
-      $user = User::find(3); // Temporarily hardcoded for testing use auth()->user();
+      $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
       if($user->id !== $booking->user_id){
           abort(404);
       }
@@ -92,6 +92,7 @@ class BookingController extends Controller
         ],
         'status' => 'update_pending'
       ]);
+      $booking->save();
 
 
       return new BookingResource($booking);
@@ -104,6 +105,16 @@ class BookingController extends Controller
             abort(404);
         }
         $booking->delete();
+        return response()->noContent();
+    }
+
+    public function cancel(Booking $booking){
+      $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
+        if($user->id !== $booking->user_id){
+            abort(404);
+        }
+        $booking->status = 'cancelled';
+        $booking->save();
         return response()->noContent();
     }
 

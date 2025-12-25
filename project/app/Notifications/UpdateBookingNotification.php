@@ -40,6 +40,9 @@ class UpdateBookingNotification extends Notification
             'confirmed' => "Your booking for {$this->booking->apartment->title} is confirmed!",
             'rejected'  => "Your booking request was declined.",
             'pending'  => "Your booking request is pending approval.",
+            'cancelled' => "Your booking has been cancelled successfully.",
+            'update_pending' => "Your booking update request is pending approval.",
+            default => "Your booking status is the same.",
         };
 
       return [
