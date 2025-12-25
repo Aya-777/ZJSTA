@@ -25,17 +25,19 @@ class BookingObserver
       $owner = $apartment->user;
       $owner->notify(new NewBookingNotification($booking));
       if ($owner->fcm_token) {
-        try {
-            $this->fcm->sendNotification(
+          dispatch(function () use ($owner, $booking) {
+            try {
+              $this->fcm->sendNotification(
                 $owner->fcm_token,
                 'New Rental Request!',
                 'Someone wants to rent your apartment. Please approve or reject.',
                 ['booking_id' => (string)$booking->id, 'action' => 'review_request'] 
-            );
-        } catch (\Exception $e) {
-            // Log it, but don't stop the booking from succeeding
-            \Log::error("Push failed: " . $e->getMessage());
-        }
+              );
+            } catch (\Exception $e) {
+              // Log it, but don't stop the booking from succeeding
+              \Log::error("Push failed: " . $e->getMessage());
+            }
+          })->afterResponse();
       }
     }
 
@@ -51,11 +53,13 @@ class BookingObserver
           $renter->notify(new BookingCompletedNotification($booking));
           // Send Push to Renter
           if ($renter->fcm_token) {
-            $this->fcm->sendNotification($renter->fcm_token, 'Booking Completed!', 'Your booking has been completed! Hope you enjoyed your stay. Please rate the apartment.',
-             [
+            dispatch(function () use ($owner, $booking) {
+              $this->fcm->sendNotification($renter->fcm_token, 'Booking Completed!', 'Your booking has been completed! Hope you enjoyed your stay. Please rate the apartment.',
+              [
                 'booking_id' => (string)$booking->id,
                 'status' => 'completed'
-            ]);
+              ]);
+            })->afterResponse();
           }
       }
 
@@ -102,27 +106,21 @@ class BookingObserver
         // notify owner
           $owner->notify(new RequestUpdateBookingNotification($booking));
           if ($owner->fcm_token) {
-            try {
+            dispatch(function () use ($owner, $booking) {
+              try {
                 $this->fcm->sendNotification(
-                    $owner->fcm_token,
-                    'Update Booking Request',
-                    'Someone wants to update their booking. Please approve or reject.',
-                    ['booking_id' => (string)$booking->id, 'action' => 'update_request'] 
+                  $owner->fcm_token,
+                  'Update Booking Request',
+                  'Someone wants to update their booking. Please approve or reject.',
+                  ['booking_id' => (string)$booking->id, 'action' => 'update_request'] 
                 );
-            } catch (\Exception $e) {
+              } catch (\Exception $e) {
                 \Log::error("Push failed: " . $e->getMessage());  
-            }
+              }
+            })->afterResponse();
         }
       }
 
-    }
-
-    /**
-     * Handle the Booking "deleted" event.
-     */
-    public function deleted(Booking $booking): void
-    {
-      
     }
 
     protected function notifyRenter($renter, $booking, $title, $message){
@@ -131,10 +129,12 @@ class BookingObserver
 
       // Send Push to Renter
       if ($renter->fcm_token) {
-        $this->fcm->sendNotification($renter->fcm_token, $title, $message, [
+        dispatch(function () use ($renter, $booking, $title, $message) {
+          $this->fcm->sendNotification($renter->fcm_token, $title, $message, [
             'booking_id' => (string)$booking->id,
-            'status' => $decision
-        ]);
+            'status' => $booking->status
+          ]);
+        })->afterResponse();
       }
     }
 }
