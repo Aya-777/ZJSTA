@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\Apartment;
 use App\Models\User;
 use App\Http\Resources\BookingResource;
+use Illuminate\Support\Facades\Auth; 
 use App\Services\FcmService;
 use App\Notifications\NewBookingNotification;
 use App\Notifications\UpdateBookingNotification;
@@ -18,8 +19,8 @@ use Illuminate\Support\Facades\DB;
 class BookingController extends Controller
 {
   // index
-    public function index(Request $request){
-      $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
+      public function index(Request $request){
+      $user = Auth::user();
 
     // filter bookings
       $query = Booking::where('user_id', $user->id);
@@ -32,10 +33,10 @@ class BookingController extends Controller
     }
     // show
     public function show(Booking $booking){
-      $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
-      if($user->id !== $booking->user_id){
-          abort(404);
-      }
+
+      if (Auth::id() !== $booking->user_id) {
+        return response()->json(['message' => 'Unauthorized'], 403);
+        }
       return new BookingResource($booking);
     }
     // store
@@ -43,7 +44,6 @@ class BookingController extends Controller
       return DB::transaction(function () use ($request) {
       // validate data
         $validated = $request->validate([
-          'user_id' => 'required|exists:users,id',
           'apartment_id' => 'required|exists:apartments,id',
           'start_date' => 'required|date',
           'end_date' => 'required|date|after:start_date',
@@ -67,7 +67,8 @@ class BookingController extends Controller
             return response()->json(['message' => 'The apartment is already booked for the selected dates.'], 409);
         } 
         
-      // create booking
+        $validated['user_id'] = Auth::id();
+
         $booking = Booking::create($validated);
 
         return new BookingResource($booking);
@@ -103,9 +104,8 @@ class BookingController extends Controller
 
     // destroy
     public function destroy(Booking $booking){
-      $user = User::find(2); // Temporarily hardcoded for testing use auth()->user();
-        if($user->id !== $booking->user_id){
-            abort(404);
+        if (Auth::id() !== $booking->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
         $booking->delete();
         return response()->noContent();

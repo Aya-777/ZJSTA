@@ -31,4 +31,12 @@ class UpdateProfileRequest extends FormRequest
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
+    public function messages(): array
+{
+    return [
+        'email.unique' => 'This email is already in use by another account.',
+        'phone_number.unique' => 'This phone number is already registered to another account.',
+
+    ];
+}
 }

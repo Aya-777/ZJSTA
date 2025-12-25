@@ -28,7 +28,6 @@ class ApartmentController extends Controller
     // store
     public function store(Request $request){
         $validated = $request->validate([
-          'user_id' => 'required',
           'city_id' => 'required',
           'title' => 'required|string|max:255',
           'description' => 'required|string',
@@ -44,6 +43,7 @@ class ApartmentController extends Controller
             'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
         ]);
         
+        $validated['user_id'] = Auth::id();
         $apartment = Apartment::create($validated);
 
         if ($request->hasFile('images')) {
@@ -69,6 +69,9 @@ class ApartmentController extends Controller
 
       // update
       public function update(Request $request , Apartment $apartment){
+        if (Auth::id() !== $apartment->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
         $validated = $request->validate([
         'user_id' => 'sometimes|exists:users,id',
         'city_id' => 'sometimes|exists:cities,id',
@@ -89,7 +92,9 @@ class ApartmentController extends Controller
 
     // destroy
     public function destroy(Apartment $apartment){
-
+      if (Auth::id() !== $apartment->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
       $apartment->delete();
       return response()->noContent();
 
