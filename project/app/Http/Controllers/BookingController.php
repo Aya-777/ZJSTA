@@ -13,6 +13,7 @@ use App\Notifications\UpdateBookingNotification;
 use App\Notifications\RequestUpdateBookingNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Http\Filters\BookingFilter;
+use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
