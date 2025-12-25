@@ -129,20 +129,6 @@ class BookingController extends Controller
         return response()->noContent();
     }
 
-
-    public function notifyRenter($renter, $title, $message){
-      // Save to DB history for Renter
-      $renter->notify(new UpdateBookingNotification($booking));
-
-      // Send Push to Renter
-      if ($renter->fcm_token) {
-        $fcm->sendNotification($renter->fcm_token, $title, $message, [
-            'booking_id' => (string)$booking->id,
-            'status' => $decision
-        ]);
-      }
-    }
-
   public function updateStatus(Request $request, $id, FcmService $fcm){      
     $request->validate(['status' => 'required|in:confirmed,rejected,completed']);
     
@@ -180,7 +166,7 @@ class BookingController extends Controller
           ? "We're sorry to inform you that your booking request for {$booking->apartment->title} has been rejected."
           : "Thank you for staying at {$booking->apartment->title}! We hope you had a great time.");
 
-    notifyRenter($renter, $title, $message);
+    $this->notifyRenter($renter, $booking, $title, $message);
 
 
     // Reject all overlapping pending bookings
@@ -204,11 +190,25 @@ class BookingController extends Controller
           $title = 'Your Booking has been rejected.';
           $message = 'Sorry the apartment is already booked for the selected dates( ' . $b->start_date . ' to ' . $b->end_date . ' )';
 
-          notifyRenter($renter, $title, $message);
+          $this->notifyRenter($renter, $b, $title, $message);
         }
       }
       
 
     return response()->json(['message' => 'Booking updated successfully', 'status' => $decision]);
   }
+
+     protected function notifyRenter($renter, $booking, $title, $message){
+      // Save to DB history for Renter
+      $renter->notify(new UpdateBookingNotification($booking));
+
+      // Send Push to Renter
+      if ($renter->fcm_token) {
+        $fcm->sendNotification($renter->fcm_token, $title, $message, [
+            'booking_id' => (string)$booking->id,
+            'status' => $decision
+        ]);
+      }
+    }
+
 }
