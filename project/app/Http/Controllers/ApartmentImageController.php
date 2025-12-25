@@ -20,6 +20,26 @@ class ApartmentImageController extends Controller
     public function show(Apartment $apartment, ApartmentImage $image){
       return new ImageResource($image);
     }
+
+    // store
+    public function store(Apartment $apartment, ApartmentImage $image){
+        $request->validate([
+            'image' => 'required|image|max:2048',
+        ]);
+
+        if (auth()->id() !== $apartment->user_id) {
+            abort(403, 'Unauthorized');
+        }
+
+        $path = $request->file('image')->store('apartment_images', 'public');
+
+        $image = ApartmentImage::create([
+            'apartment_id' => $apartment->id,
+            'image_path' => $path,
+        ]);
+
+        return new ImageResource($image);
+    }
     
     // destroy
     public function destroy(ApartmentImage $image)
