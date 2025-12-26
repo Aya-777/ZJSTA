@@ -8,6 +8,7 @@ use App\Http\Resources\ApartmentResource;
 use App\Http\Filters\ApartmentFilter;
 use App\Http\Controllers\ApartmentImageController;
 use App\Models\ApartmentImage;
+use Illuminate\Support\Facades\Auth;
 
 class ApartmentController extends Controller
 {
@@ -28,6 +29,7 @@ class ApartmentController extends Controller
     // store
     public function store(Request $request){
         $validated = $request->validate([
+          'user_id' => 'required|exists:users,id',
           'city_id' => 'required',
           'title' => 'required|string|max:255',
           'description' => 'required|string',

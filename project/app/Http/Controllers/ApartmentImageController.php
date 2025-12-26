@@ -7,6 +7,7 @@ use App\Models\ApartmentImage;
 use App\Http\Resources\ImageResource;
 use App\Models\Apartment;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class ApartmentImageController extends Controller
 {
@@ -17,7 +18,8 @@ class ApartmentImageController extends Controller
     }
 
     // show
-    public function show(Apartment $apartment, ApartmentImage $image){
+    public function show($id){
+      $image = ApartmentImage::find($id);
       return new ImageResource($image);
     }
 
@@ -31,7 +33,7 @@ class ApartmentImageController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $path = $request->file('image')->store('apartment', 'public');
+        $path = $request->file('image')->store('apartments', 'public');
 
         $image = ApartmentImage::create([
             'apartment_id' => $apartment->id,
@@ -42,9 +44,20 @@ class ApartmentImageController extends Controller
     }
     
     // destroy
-    public function destroy(ApartmentImage $image)
+    public function destroy(Request $request, $id)
     {
-        if (auth()->id() !== $image->apartment->user_id) {
+      // check if the owner is the same as the user
+      $apartment = Apartment::find($request->apartment_id);
+        if (auth()->id() !== $apartment->user_id) {
+            abort(403, 'Unauthorized');
+        }
+        // check if the image exists
+        $image = ApartmentImage::find($id);
+        if(!$image){
+          abort(404, 'Image not found');
+        }
+        // check if the image is for the apartment
+        if($image->apartment->id !== $apartment->id){
             abort(403, 'Unauthorized');
         }
 

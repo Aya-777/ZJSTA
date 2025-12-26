@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Apartment;
 use App\Models\ApartmentImage;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class PhotoController extends Controller
 {

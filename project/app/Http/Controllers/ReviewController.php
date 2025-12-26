@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\Review;
 use App\Models\Apartment;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
@@ -38,8 +39,11 @@ class ReviewController extends Controller
     $booking = Booking::where('id', $request->booking_id)
     ->where('user_id', auth()->id())
     ->where('status', 'completed')
-    ->firstOrFail();
+    ->first();
     
+    if(!$booking){
+      return response()->json(['message' => 'Booking must be completed for review.'], 400);
+    }
     $review = Review::create([
       'user_id' => auth()->id(),
       'apartment_id' => $booking->apartment_id,
