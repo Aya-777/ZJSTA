@@ -61,7 +61,7 @@ Route::apiResource('cities', CityController::class)->only(['index', 'show']);
 Route::post('/apartments/{apartment}/photos', [PhotoController::class, 'upload']);
 
 // Owner's Approval/Rejection Routes 
-Route::middleware(['auth:sanctum', 'is.owner']) ->group(function () {
+Route::middleware(['auth:sanctum', 'is.booking.owner']) ->group(function () {
     Route::post('/owner/bookings/{booking}/approve', [OwnerBookingController::class, 'approve']);
     Route::post('/owner/bookings/{booking}/reject', [OwnerBookingController::class, 'reject']);
 });
