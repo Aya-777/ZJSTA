@@ -25,7 +25,7 @@ class RegisterUserRequest extends FormRequest
             'first_name'=>'required|string|max:255|min:3',
             'last_name'=>'required|string|max:255',
             'email' => 'required|string|email|unique:users,email',
-            'password'=>'required|string|min:8',
+            'password'=>'required|string|min:8|confirmed',
             'phone_number'=>'required|string|unique:users,phone_number',
             'role'=>'required|string|in:owner,renter',
             'profile_picture'=>'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -44,7 +44,7 @@ class RegisterUserRequest extends FormRequest
         'email.unique' => 'This email address is already registered. Please try to log in.',
         'password.required' => 'A password is required.',
         'password.min' => 'The password must be at least 8 characters long.',
-        // 'password.confirmed' => 'The password confirmation does not match.', 
+        'password.confirmed' => 'The password confirmation does not match.', 
         'identity_image.required' => 'An identity image is required for verification.',
         'identity_image.image' => 'The identity verification must be a valid image file.',
     ];
