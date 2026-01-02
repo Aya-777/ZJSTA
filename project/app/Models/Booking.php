@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Apartment;
 use App\Models\User;
 use App\Models\Payement;
+use App\Models\Review;
 
 class Booking extends Model
 {
@@ -14,6 +15,12 @@ class Booking extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    protected $casts = [
+        'pending_modifications' => 'array',
+        'start_date' => 'date',
+        'end_date' => 'date',
+    ];
 
     public function apartment()
     {
@@ -23,8 +30,8 @@ class Booking extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function payement()
+    public function review()
     {
-        return $this->hasMany(Payement::class);
+      return $this->hasOne(Review::class);
     }
 }

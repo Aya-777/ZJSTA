@@ -16,11 +16,11 @@ class Apartment extends Model
 
     protected $guarded = [];
 
+    // Relationships
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
     public function bookings()
     {
         return $this->hasMany(Booking::class);
@@ -32,6 +32,13 @@ class Apartment extends Model
     public function city()
     {
         return $this->belongsTo(City::class);
+    }
+    public function reviews(){
+      return $this->hasMany(Review::class);
+    }
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
     }
 
 }

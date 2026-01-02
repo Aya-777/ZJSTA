@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\ApartmentImage;
 use App\Http\Resources\ImageResource;
 use App\Models\Apartment;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class ApartmentImageController extends Controller
 {
@@ -16,40 +18,56 @@ class ApartmentImageController extends Controller
     }
 
     // show
-    public function show(Apartment $apartment, ApartmentImage $image){
-      if($image->apartment_id != $apartment->id){
-          abort(404);
-      }
+    public function show($id){
+      $image = ApartmentImage::find($id);
       return new ImageResource($image);
     }
 
-    // create
-    public function store(Request $request){
-      $validated = $request->validate([
-        'apartment_id' => 'required|exists:apartments,id',
-        'image_url' => 'required|url',
-      ]);
-      $image = ApartmentImage::create($validated);
-      return new ImageResource($image);
-    }
+    // store
+    public function store(Apartment $apartment, Request $request){
+        $request->validate([
+            'image' => 'required|image|max:2048',
+        ]);
 
-    // update
-    public function update(Apartment $apartment, ApartmentImage $image, Request $request){
-      $validated = $request->validate([
-        'apartment_id' => 'sometimes|exists:apartments,id',
-        'image_url' => 'sometimes|url',
-      ]);
-      $image->update($validated);
-      return new ImageResource($image);
+        if (auth()->id() !== $apartment->user_id) {
+            abort(403, 'Unauthorized');
+        }
+
+        $path = $request->file('image')->store('apartments', 'public');
+
+        $image = ApartmentImage::create([
+            'apartment_id' => $apartment->id,
+            'image_path' => $path,
+        ]);
+
+        return new ImageResource($image);
     }
     
     // destroy
-    public function destroy(Apartment $apartment, ApartmentImage $image){
-        if($image->apartment_id != $apartment->id){
-            abort(404);
+    public function destroy(Request $request, $id)
+    {
+      // check if the owner is the same as the user
+      $apartment = Apartment::find($request->apartment_id);
+        if (auth()->id() !== $apartment->user_id) {
+            abort(403, 'Unauthorized');
         }
+        // check if the image exists
+        $image = ApartmentImage::find($id);
+        if(!$image){
+          abort(404, 'Image not found');
+        }
+        // check if the image is for the apartment
+        if($image->apartment->id !== $apartment->id){
+            abort(403, 'Unauthorized');
+        }
+
+        Storage::disk('public')->delete($image->image_path);
+
         $image->delete();
-        return response()->noContent();
+
+        return response()->json([
+            'message' => 'Image deleted successfully'
+        ]);
     }
 
 }

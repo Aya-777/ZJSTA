@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('apartment_images', function (Blueprint $table) {
-            $table->renameColumn('image_url', 'image_path');
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->json('pending_modifications')->nullable();
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('apartment_images', function (Blueprint $table) {
-            $table->renameColumn('image_path', 'image_url');
+        Schema::table('bookings', function (Blueprint $table) {
+            //
         });
     }
 };
