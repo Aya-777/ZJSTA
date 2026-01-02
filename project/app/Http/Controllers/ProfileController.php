@@ -24,7 +24,7 @@ class ProfileController extends Controller
               Storage::disk('public')->delete($user->profile_picture);
             }
             $path=$request->file('profile_picture')->store('profiles','public');
-            $validatedData['profile_picture']=$path;
+            $validatedData['profile_picture']=Storage::url($path);
           }
 
            $user->update($request->validated());

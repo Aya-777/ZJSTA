@@ -35,8 +35,8 @@ class AuthController extends Controller
             'password' => Hash::make($validatedData['password']),
             'phone_number' => $validatedData['phone_number'],
             'role' => $validatedData['role'],
-            'profile_picture'=>$imagePaths['profile_picture'],
-            'identity_image'=>$imagePaths['identity_image'],
+            'profile_picture' => ($imagePaths['profile_picture']) ? Storage::url($imagePaths['profile_picture']) : null,
+            'identity_image' => Storage::url($imagePaths['identity_image']),
              'birth_date' => $validatedData['birth_date'],
 
         ]);
